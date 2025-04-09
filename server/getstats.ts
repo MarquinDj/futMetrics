@@ -1,7 +1,6 @@
 import axios from "axios";
-import cheerio, { load } from "cheerio";
 import { Team } from "./interface";
-import { getNameLink, getTeamGoals } from "./utilsScrap";
+import { getNameLink, getTeamCards, getTeamCorners, getTeamGoals } from "./utilsScrap";
 
 async function scrapeSite() {
   const response = await axios.get(
@@ -15,8 +14,13 @@ async function scrapeSite() {
 async function scrapeTeam(team: Team) {
   const response = await axios.get("https://fbref.com".concat(team.link));
   const html = response.data;
-  const goals = getTeamGoals(html);
-  return goals;
+  const updatedTeam = {
+    ...team,
+    ...getTeamGoals(html, team),
+    ...getTeamCards(html, team),
+    ...getTeamCorners(html, team),
+  };
+  return updatedTeam;
 }
 
 async function test() {

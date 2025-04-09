@@ -1,1 +1,1 @@
-console.log("Gamer")
+console.log(Number("2,4".replace(",", ".")))
