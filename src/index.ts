@@ -8,8 +8,8 @@ import {
 async function getDuelStatsBR() {
   try {
     const teams = await scrapeSite();
-    const home = "Corinthians";
-    const away = "Ceará";
+    const home = "Vasco da Gama";
+    const away = "Sport Recife";
     const homeTeam = teams.find((team) => team.name === home);
     const awayTeam = teams.find((team) => team.name === away);
     if (homeTeam && awayTeam) {
@@ -39,8 +39,8 @@ async function getDuelStatsBR() {
             cartões = ${expCards}`);
     }
   } catch (e) {
-    console.error("Erro ao calcular estatísticas");
+    console.log(`Erro ao calcular estatísticas ${e}`);
   }
 }
 
-getDuelStatsBR()
+getDuelStatsBR();
