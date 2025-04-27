@@ -5,117 +5,114 @@ export function getNameLink(html: any): Team[] {
   try {
     const teams: Team[] = [];
     const $ = load(html);
-    const teamLinks = $(
-      "#results2025241_overall > tbody > tr > td:nth-child(2) > a"
-    );
-    teamLinks.map((_, team) => {
-      const link = $(team).attr("href");
-      const name = $(team).text();
-      if (link) {
-        teams.push({ link, name });
+    $("#results2025241_overall > tbody > tr > td:nth-child(2) > a").map(
+      (_, team) => {
+        const link = $(team).attr("href");
+        const name = $(team).text();
+        if (link) {
+          teams.push({ link, name });
+        }
       }
-    });
+    );
     return teams;
   } catch (e) {
     throw new Error(`Erro ao coletar nome e link dos times: ${e}`);
   }
 }
 
-export function getTeamGoals(html: any, team: Team): Team {
+export function getTeamGames(html: any, homeAway: string) {
   try {
     const $ = load(html);
-    const expectedGoalsHome = Number(
-      $("#stats_standard_24 > tfoot > tr:nth-child(1) > td:nth-child(29)")
-        .text()
-        .replace(",", ".")
-    );
-    const expectedGoalsAway = Number(
-      $("#stats_standard_24 > tfoot > tr:nth-child(2) > td:nth-child(29)")
-        .text()
-        .replace(",", ".")
-    );
-    team.homeGoals = expectedGoalsHome;
-    team.awayGoals = expectedGoalsAway;
-    return team;
+    const games: any = [];
+    $("#matchlogs_for > tbody > tr").map((_, team) => {
+      const row = $(team).find("th, td");
+      const local = $(row[5]).text();
+      const match = $(row[18]);
+      const matchLink = match.find("a").attr("href");
+      const matchText = match.text();
+      if (local == homeAway && matchText !== "Confronto") {
+        games.push({
+          link: matchLink,
+        });
+      }
+    });
+    return games;
   } catch (e) {
-    throw new Error(`Erro ao coletar gols dos times: ${e}`);
+    throw new Error(`Erro ao acessar página do time da casa: ${e}`);
   }
 }
 
-export function getTeamCards(html: any, team: Team): Team {
+export function getTeamStats(html: string, homeAway: string) {
   try {
     const $ = load(html);
-    const games = Number(
-      $("#stats_misc_24 > tfoot > tr:nth-child(1) > td:nth-child(5)").text()
-    );
-    const yellowCardsHome = Number(
-      $("#stats_misc_24 > tfoot > tr:nth-child(1) > td:nth-child(6)").text()
-    );
-    const yellowCardsAway = Number(
-      $("#stats_misc_24 > tfoot > tr:nth-child(2) > td:nth-child(6)").text()
-    );
-    const redCardsHome = Number(
-      $("#stats_misc_24 > tfoot > tr:nth-child(1) > td:nth-child(7)").text()
-    );
-    const redCardsAway = Number(
-      $("#stats_misc_24 > tfoot > tr:nth-child(2) > td:nth-child(7)").text()
-    );
-    const totalCardsHome = (yellowCardsHome + redCardsHome) / games;
-    const totalCardsAway = (yellowCardsAway + redCardsAway) / games;
-    team.homeCards = totalCardsHome;
-    team.awayCards = totalCardsAway;
-    return team;
-  } catch (e) {
-    throw new Error(`Erro ao coletar cartões dos times: ${e}`);
-  }
-}
+    if (homeAway == "Em casa") {
+      const proGoals = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .first()
+          .find("tfoot > tr > td:nth-child(7)")
+          .text()
+      );
+      const conGoals = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .eq(1)
+          .find("tfoot > tr > td:nth-child(7)")
+          .text()
+      );
+      const proCorners = Number(
+        $("#team_stats_extra > div").eq(0).children("div").eq(6).text()
+      );
+      const conCorners = Number(
+        $("#team_stats_extra > div").eq(0).children("div").eq(8).text()
+      );
+      const proCards = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .first()
+          .find("tfoot > tr > td:nth-child(13)")
+          .text()
+      );
+      const conCards = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .eq(1)
+          .find("tfoot > tr > td:nth-child(13)")
+          .text()
+      );
 
-export function getTeamCorners(html: any, team: Team): Team {
-  try {
-    const $ = load(html);
-    const games = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(1) > td:nth-child(5)"
-      ).text()
-    );
-    const homeCornersIn = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(1) > td:nth-child(15)"
-      ).text()
-    );
-    const homeCornersOut = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(1) > td:nth-child(16)"
-      ).text()
-    );
-    const homeCornersLine = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(1) > td:nth-child(17)"
-      ).text()
-    );
-    const awayCornersIn = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(2) > td:nth-child(15)"
-      ).text()
-    );
-    const awayCornersOut = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(2) > td:nth-child(16)"
-      ).text()
-    );
-    const awayCornersLine = Number(
-      $(
-        "#stats_passing_types_24 > tfoot > tr:nth-child(2) > td:nth-child(17)"
-      ).text()
-    );
-    const totalCornersHome =
-      (homeCornersIn + homeCornersOut + homeCornersLine) / games;
-    const totalCornersAway =
-      (awayCornersIn + awayCornersOut + awayCornersLine) / games;
-    team.homeCorners = totalCornersHome;
-    team.awayCorners = totalCornersAway;
-    return team;
+      return { proGoals, conGoals, proCorners, conCorners, proCards, conCards };
+    } else {
+      const proGoals = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .eq(1)
+          .find("tfoot > tr > td:nth-child(7)")
+          .text()
+      );
+      const conGoals = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .first()
+          .find("tfoot > tr > td:nth-child(7)")
+          .text()
+      );
+      const proCorners = Number(
+        $("#team_stats_extra > div").eq(0).children("div").eq(8).text()
+      );
+      const conCorners = Number(
+        $("#team_stats_extra > div").eq(0).children("div").eq(6).text()
+      );
+      const proCards = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .eq(1)
+          .find("tfoot > tr > td:nth-child(13)")
+          .text()
+      );
+      const conCards = Number(
+        $('table[id^="stats"][id$="summary"]')
+          .first()
+          .find("tfoot > tr > td:nth-child(13)")
+          .text()
+      );
+
+      return { proGoals, conGoals, proCorners, conCorners, proCards, conCards };
+    }
   } catch (e) {
-    throw new Error(`Erro ao coletar escanteios dos times: ${e}`);
+    throw new Error(`Erro ao coletar informações dos times: ${e}`);
   }
 }

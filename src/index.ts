@@ -1,4 +1,8 @@
-import { scrapeSite, scrapeTeam } from "../data/scrapSite/getInfo";
+import {
+  scrapeSite,
+  scrapeTeamMatches,
+  scrapTeamStats,
+} from "../data/scrapSite/getInfo";
 import {
   calculateExpCards,
   calculateExpCorners,
@@ -8,28 +12,40 @@ import {
 async function getDuelStatsBR() {
   try {
     const teams = await scrapeSite();
-    const home = "Vasco da Gama";
-    const away = "Sport Recife";
+    const home = "Flamengo";
+    const away = "Corinthians";
     const homeTeam = teams.find((team) => team.name === home);
     const awayTeam = teams.find((team) => team.name === away);
     if (homeTeam && awayTeam) {
-      const homeStats = await scrapeTeam(homeTeam);
-      const awayStats = await scrapeTeam(awayTeam);
+      const homeTeamMatches = await scrapeTeamMatches(homeTeam, "Em casa");
+      const awayTeamMatches = await scrapeTeamMatches(awayTeam, "Visitante");
+      homeTeam.matchNumber = homeTeamMatches.length;
+      awayTeam.matchNumber = awayTeamMatches.length;
+      const homeTeamComplete = await scrapTeamStats(
+        homeTeamMatches,
+        "Em casa",
+        homeTeam
+      );
+      const awayTeamComplete = await scrapTeamStats(
+        awayTeamMatches,
+        "Visitante",
+        awayTeam
+      );
       const { homeExpGoals, awayExpGoals, expGoals } = calculateExpGoals(
-        homeStats,
-        awayStats
+        homeTeamComplete,
+        awayTeamComplete
       );
       const { homeExpCards, awayExpCards, expCards } = calculateExpCards(
-        homeStats,
-        awayStats
+        homeTeamComplete,
+        awayTeamComplete
       );
       const { homeExpCorners, awayExpCorners, expCorners } =
-        calculateExpCorners(homeStats, awayStats);
-      console.log(`Espera-se para o ${homeTeam?.name}:
+        calculateExpCorners(homeTeamComplete, awayTeamComplete);
+      console.log(`Espera-se para o ${homeTeamComplete.name}:
             gols = ${homeExpGoals}
             escanteios = ${homeExpCorners}
             cartões = ${homeExpCards}`);
-      console.log(`Espera-se para o ${awayTeam?.name}:
+      console.log(`Espera-se para o ${awayTeamComplete.name}:
             gols = ${awayExpGoals}
             escanteios = ${awayExpCorners}
             cartões = ${awayExpCards}`);
