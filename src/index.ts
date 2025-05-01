@@ -2,18 +2,18 @@ import {
   scrapeSite,
   scrapeTeamMatches,
   scrapTeamStats,
-} from "../data/scrapSite/getInfo";
+} from "./services/scraping/getInfo";
 import {
   calculateExpCards,
   calculateExpCorners,
   calculateExpGoals,
-} from "./utils/utils";
+} from "./utils/calculations";
 
 async function getDuelStatsBR() {
   try {
     const teams = await scrapeSite();
-    const home = "Flamengo";
-    const away = "Corinthians";
+    const home = "Santos";
+    const away = "RB Bragantino";
     const homeTeam = teams.find((team) => team.name === home);
     const awayTeam = teams.find((team) => team.name === away);
     if (homeTeam && awayTeam) {

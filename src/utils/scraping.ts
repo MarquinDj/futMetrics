@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { Team } from "../interfaces/interface";
+import { Team } from "../interfaces/types";
 
 export function getNameLink(html: any): Team[] {
   try {

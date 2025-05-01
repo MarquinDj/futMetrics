@@ -1,14 +1,11 @@
 import axios from "axios";
-import { Matchlink, Team } from "../../src/interfaces/interface";
+import { Matchlink, Team } from "../../interfaces/types";
 import {
   getNameLink,
-  // getTeamCards,
-  // getTeamCorners,
-  // getTeamGoals,
   getTeamGames,
   getTeamStats,
-} from "../../src/utils/funcScrap";
-import { ENV_VAR } from "../../env";
+} from "../../utils/scraping";
+import { ENV_VAR } from "../../config/env";
 
 export async function scrapeSite() {
   try {
@@ -49,7 +46,7 @@ export async function scrapTeamStats(
       conCardsTemp = 0;
 
     for (const element of matches) {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 9000));
       const response = await axios.get(ENV_VAR.URL_SITE.concat(element.link));
       const html = response.data;
       const { proGoals, conGoals, proCorners, conCorners, proCards, conCards } =
@@ -74,14 +71,3 @@ export async function scrapTeamStats(
     throw new Error(`Erro ao coletar informações das partidas: ${e}`);
   }
 }
-
-// async function scrapTeste(){
-//   const response = await axios.get(ENV_VAR.URL_SITE.concat("/pt/partidas/c33f957d/Fortaleza-Palmeiras-2025Abril20-Serie-A"));
-//       const html = response.data;
-//       const {proGoals, conGoals, proCorners, conCorners, proCards, conCards} = getTeamStats(html, "Em casa")
-
-//       console.log(proGoals, conGoals, proCorners, conCorners, proCards, conCards)
-
-// }
-
-// scrapTeste();
