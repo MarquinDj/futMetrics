@@ -12,8 +12,8 @@ import {
 async function getDuelStatsBR() {
   try {
     const teams = await scrapeSite();
-    const home = "Santos";
-    const away = "RB Bragantino";
+    const home = "Cruzeiro";
+    const away = "Flamengo";
     const homeTeam = teams.find((team) => team.name === home);
     const awayTeam = teams.find((team) => team.name === away);
     if (homeTeam && awayTeam) {

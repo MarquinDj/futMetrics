@@ -23,7 +23,7 @@ FutMetrics é uma aplicação TypeScript que realiza web scraping de estatístic
 
 ## Estrutura do Projeto
 
-A estrutura do projeto foi reorganizada para melhor manutenção e escalabilidade:
+A estrutura do projeto foi organizada para melhor manutenção e escalabilidade:
 
 ```
 FutMetrics/
